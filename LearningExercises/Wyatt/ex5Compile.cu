@@ -1,0 +1,1 @@
+!nvcc -std=c++17 -arch=native exercise5.cu -o exercise5 && ./exercise5

@@ -1,0 +1,1 @@
+!nvcc -std=c++17 --extended-lambda -arch=native ex1.cu -o ex1 && ./ex1
