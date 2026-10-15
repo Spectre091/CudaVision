@@ -1,25 +1,66 @@
-%%writefile ex3.cu
 #include <cstdio>
+#include <chrono>
+#include <random>
+#include <algorithm>
 #include <thrust/universal_vector.h>
 #include <thrust/transform.h>
 #include <thrust/execution_policy.h>
+#include <cuda_runtime.h>
 
-int main()
+void cpu_relax(thrust::universal_vector<float>& temp, float k, float room)
 {
-    thrust::universal_vector<float> temp{42, 24, 50};
-    float k = 0.5f, room = 20;
+    const auto relax = [k, room](float t) {
+        return t + k * (room - t);
+    };
+    std::transform(temp.begin(), temp.end(), temp.begin(), relax);
+}
 
-    // ===== EXERCISE 3 START =====
+void gpu_relax(thrust::universal_vector<float>& temp, float k, float room)
+{
     // TODO: write a __host__ __device__ lambda (capture k and room by value)
     //       that takes a temperature t and returns t + k * (room - t)
+    const auto relax = [k, room] __host__ __device__(float t) {
+        return t + k * (room - t);
+    };
 
     // TODO: use thrust::transform on the GPU to apply the lambda
     //       to every element of temp, writing the results back into temp
-    // ===== EXERCISE 3 END =====
+    thrust::transform(thrust::device, temp.begin(), temp.end(), temp.begin(), relax);
+    cudaDeviceSynchronize();
+}
 
-    printf("temp = {");
-    for (size_t i = 0; i < temp.size(); i++)
-        printf("%g%s", (float)temp[i], i + 1 < temp.size() ? ", " : "");
-    printf("}   (expected {31, 22, 35})\n");
+int main()
+{
+    constexpr std::size_t n = 1 << 20;
+    constexpr float k = 0.5f;
+    constexpr float room = 20.0f;
+    thrust::universal_vector<float> initial(n);
+
+    std::mt19937 rng(42);
+    std::uniform_real_distribution<float> distribution(-20.0f, 100.0f);
+    for (std::size_t i = 0; i < n; ++i) {
+        initial[i] = distribution(rng);
+    }
+
+    thrust::universal_vector<float> cpu_temp = initial;
+    thrust::universal_vector<float> gpu_temp = initial;
+
+    const auto cpu_start = std::chrono::steady_clock::now();
+    cpu_relax(cpu_temp, k, room);
+    const auto cpu_end = std::chrono::steady_clock::now();
+
+    const auto gpu_start = std::chrono::steady_clock::now();
+    gpu_relax(gpu_temp, k, room);
+    const auto gpu_end = std::chrono::steady_clock::now();
+
+    const auto milliseconds = [](auto start, auto end) {
+        return std::chrono::duration<double, std::milli>(end - start).count();
+    };
+
+    printf("n          = %zu\n", n);
+    printf("cpu first  = %f  (%f ms)\n",
+           cpu_temp[0], milliseconds(cpu_start, cpu_end));
+    printf("gpu first  = %f  (%f ms)\n",
+           gpu_temp[0], milliseconds(gpu_start, gpu_end));
     return 0;
 }
