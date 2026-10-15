@@ -19,13 +19,10 @@ void gpu_relax(thrust::universal_vector<float>& temp, float k, float room)
 {
     // TODO: write a __host__ __device__ lambda (capture k and room by value)
     //       that takes a temperature t and returns t + k * (room - t)
-    const auto relax = [k, room] __host__ __device__(float t) {
-        return t + k * (room - t);
-    };
+
 
     // TODO: use thrust::transform on the GPU to apply the lambda
     //       to every element of temp, writing the results back into temp
-    thrust::transform(thrust::device, temp.begin(), temp.end(), temp.begin(), relax);
     cudaDeviceSynchronize();
 }
 

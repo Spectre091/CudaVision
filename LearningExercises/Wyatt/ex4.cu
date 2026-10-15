@@ -9,6 +9,8 @@
 #include <thrust/sort.h>
 #include <thrust/universal_vector.h>
 
+// Review the cpu implementations of median and variance, then implement your own gpu versions.
+
 float cpu_median(const thrust::universal_vector<float>& vec)
 {
     thrust::universal_vector<float> sorted_vec = vec;
