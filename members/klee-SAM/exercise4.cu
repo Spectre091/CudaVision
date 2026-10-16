@@ -11,12 +11,14 @@
 // ===== EXERCISE 4 START =====
 float median(thrust::universal_vector<float> vec)
 {
+    //
     thrust::sort(thrust::device, vec.begin(), vec.end());
     return vec[vec.size()/2];
 }
 
 float variance(const thrust::universal_vector<float>& x, float mean)
 {
+    //
     auto it = thrust::make_transform_iterator(
         x.begin(), 
         [mean] __host__ __device__(float xi) {
