@@ -33,8 +33,8 @@ thrust::universal_vector<float> row_temperatures(int height, int width,
     //   1. thrust::make_counting_iterator(0) counts 0, 1, 2, 3, ...
     //   2. wrap it in thrust::make_transform_iterator, with a lambda
     //      that turns cell number i into its row: i / width
-    auto row_ids_begin = row_ids.begin();
-    auto row_ids_end = row_ids_begin + temp.size();
+    auto row_ids_begin = row_ids.begin();  //change THIS!!!!
+    auto row_ids_end = row_ids_begin + temp.size(); 
     thrust::universal_vector<float> sums(height);
     thrust::reduce_by_key(thrust::device,
         row_ids_begin, row_ids_end,       // keys: row of each cell

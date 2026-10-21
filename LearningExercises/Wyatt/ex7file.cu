@@ -1,13 +1,15 @@
 // Exercise 7: turn row totals into row averages
 //
 // Build and run in Google Colab (start each line with !):
-//   nvcc -arch=native --extended-lambda -o ex7 ex7_row_averages_problem.cu
+//   nvcc -arch=native --extended-lambda -o ex7 ex7file.cu
 //   ./ex7
 //
 // Same grid as Exercise 6, but now we want the average temperature of each
 // row instead of the total. Run it once before you change anything and write
 // down the GB/s, then do the TODOs and run it again.
 
+
+//%%writefile ex7file.cu
 #include <cstdio>
 #include <cmath>
 #include <chrono>
@@ -36,13 +38,13 @@ thrust::universal_vector<float> row_averages(int height, int width,
     thrust::universal_vector<float> means(height);
     // TODO 1: wrap means.begin() in thrust::make_transform_output_iterator
     //         with mean_functor{width}, so each sum is divided as it's written
-    auto means_output = means.begin();
-    auto row_ids_begin = row_ids.begin();  // paste your Exercise 6 line here
-    auto row_ids_end = row_ids_begin + temp.size();
+    auto means_output = means.begin();                                             //change This!!!
+    auto row_ids_begin = row_ids.begin();  // paste your Exercise 6 line here, same code change. 
+    auto row_ids_end = row_ids_begin + temp.size(); //keep same.
     thrust::reduce_by_key(thrust::device, row_ids_begin, row_ids_end,
         temp.begin(), thrust::make_discard_iterator(), means_output);
     // TODO 2: delete this extra pass once means_output divides
-    thrust::transform(thrust::device, means.begin(), means.end(),
+    thrust::transform(thrust::device, means.begin(), means.end(),    //remove as you dont need anymore after applying ex7.
                       means.begin(), mean_functor{width});
     return means;
 }
