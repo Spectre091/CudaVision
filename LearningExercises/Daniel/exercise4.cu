@@ -19,7 +19,7 @@ float gpu_median(const thrust::universal_vector<float>& vec)
 {
     thrust::universal_vector<float> sorted_vec = vec;
     // TODO: Replace std::sort with the respective thrust implementation to run on the GPU.
-    std::sort(thrust::device, sorted_vec.begin(), sorted_vec.end());
+    thrust::sort(thrust::device, sorted_vec.begin(), sorted_vec.end());
     cudaDeviceSynchronize();
     return sorted_vec[sorted_vec.size() / 2];
 }
