@@ -11,12 +11,12 @@ int main()
 
     // TODO: replace each "???" with your guess: "CPU" or "GPU"
     thrust::for_each(thrust::device, vec.begin(), vec.end(),
-        [] __host__ __device__(int) { cv::where_am_I("???"); });
+        [] __host__ __device__(int) { cv::where_am_I("GPU"); });
     cudaDeviceSynchronize();  // flush GPU printf before the next line prints
 
     thrust::for_each(thrust::host, vec.begin(), vec.end(),
-        [] __host__ __device__(int) { cv::where_am_I("???"); });
+        [] __host__ __device__(int) { cv::where_am_I("CPU"); });
 
-    cv::where_am_I("???");
+    cv::where_am_I("CPU");
     return 0;
 }
